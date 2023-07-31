@@ -1,6 +1,64 @@
+## 前端Vue核心
+
+开发一个前端模块可以概括为以下几个步骤：
+（1）写静态页面、拆分为静态组件；
+（2）发请求（API）；
+（3）vuex（actions、mutations、state三连操作）；
+（4）组件获取仓库数据，动态展示；
+
+## 1、vue文件目录分析
+
+public文件夹：静态资源，webpack进行打包的时候会原封不动打包到dist文件夹中。
+
+pubilc/index.html是一个模板文件，作用是生成项目的入口文件，webpack打包的js,css也会自动注入到该页面中。我们浏览器访问项目的时候就会默认打开生成好的index.html。
+
+src文件夹（程序员代码文件夹）
+
+assets： 存放公用的静态资源
+components： 非路由组件（全局组件），其他组件放在views或者pages文件夹中
+App.vue： 唯一的跟组件
+main.js： 程序入口文件，最先执行的文件
+
+    assets： 存放公用的静态资源
+    components： 非路由组件（全局组件），其他组件放在views或者pages文件夹中
+    App.vue： 唯一的跟组件
+    main.js： 程序入口文件，最先执行的文件
+
+babel.config.js: 配置文件（babel相关）
+package.json: 项目的详细信息记录
+package-lock.json: 缓存性文件（各种包的来源）
+
+## 2、项目配置
+
+### 2.1 项目运行，浏览器自动打开
+
+```json
+package.json
+    "scripts": {
+    "serve": "vue-cli-service serve --open",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+    },
+```
+
+### 2.2 关闭eslint校验工具（不关闭会有各种规范，不按照规范就会报错）
+
+根目录下创建vue.config.js,进行配置
+
+```JavaScript
+module.exports = {
+  //关闭eslint
+  lintOnSave: false
+}
+```
+
+### 2.3 src文件夹配置别名,创建jsconfig.json，用@/代替src/，exclude表示不可以使用该别名的文件
 
 
-## 6.axios二次封装
+
+
+
+## 6、axios二次封装
 
 ```JavaScript
 import axios from "axios";
@@ -30,7 +88,9 @@ requests.interceptors.response.use((res) => {
 export default requests;
 ```
 
-## 7.接口统一管理
+6.1  axios
+
+## 7、接口统一管理
 
 项目很小：完全可以在组件的生命周期函数中发请求；
 
@@ -93,7 +153,7 @@ import {reqCateGoryList} from './api'
 reqCateGoryList();
 ```
 
-## 8.nprogress进度条插件
+## 8、nprogress进度条插件
 
 打开一个页面时，往往会伴随一些请求，并且会在页面上方出现进度条。它的原理时，在我们发起请求的时候开启进度条，在请求成功后关闭进度条，所以只需要在request.js中进行配置。 如下图所示，我们页面加载时发起了一个请求，此时页面上方出现蓝色进度条 ![在这里插入图片描述](https://gitee.com/river-ice/notes/raw/master/%E5%89%8D%E7%AB%AF/Project/assets/023a6a38365bb3cbea5289f80d59516dc65e9339.png) 对应的request.js设置
 
@@ -138,7 +198,7 @@ export default requests;
 
 
 
-## 9.vuex
+## 9、vuex
 
 > 当项目比较大，组件通信数据比较复杂，这种情况在使用vuex
 >
@@ -188,7 +248,7 @@ getters计算属性，在项目当中，为了简化数据而生
 
 mounted：模板已经变为真是DOM【只不过没有数据，显示空白】，因为ajax是异步，需要时间的。 created：稍微好那么一丢丢（不算啥）
 
-## 10.卡顿现象
+## 10、卡顿现象
 
 - 正常情况 (用户慢慢的操作) :鼠标进入， 每一个一级分类h3，都会触发鼠标进入事件
 - 非正常情况 (用户操作很快)本身全部的级分类都应该触发鼠标进入事件，但是经过测试，只有部分h3触发了
@@ -236,7 +296,7 @@ methods: {
     区别：
     防抖：用户操作很频繁，但是只是执行一次
     节流：用户操作很频繁，但是把频繁的操作变为少量操作[可以给浏览器有充裕的时间解析代码]
-## 11.编程式导航+事件委托实现路由跳转
+## 11、编程式导航+事件委托实现路由跳转
 
 
 ![img](https://gitee.com/river-ice/notes/raw/master/%E5%89%8D%E7%AB%AF/Project/assets/da7bf2aa195a43f7bc547065ff7662d7dbebf0a9.png) 如上图所示，三级标签列表有很多，每一个标签都是一个页面链接，我们要实现通过点击表现进行路由跳转。 路由跳转的两种方法：导航式路由，编程式路由。
@@ -255,15 +315,16 @@ methods: {
 
 **解决方法：**
 
- 对于问题1：为三个等级的a标签添加自定义属性date-categoryName绑定商品标签名称来标识a标签（其余的标签是没有该属性的）。
+ **对于问题1**：为三个等级的a标签添加自定义属性date-categoryName绑定商品标签名称来标识a标签（其余的标签是没有该属性的）。
 
-对于问题2：为三个等级的a标签再添加自定义属性data-category1Id、data-category2Id、data-category3Id来获取三个等级a标签的商品id，用于路由跳转。 我们可以通过在函数中传入event参数，获取当前的点击事件，通过event.target属性获取当前点击节点，再通过dataset属性获取节点的属性信息。
+**对于问题2**：为三个等级的a标签再添加自定义属性data-category1Id、data-category2Id、data-category3Id来获取三个等级a标签的商品id，用于路由跳转。 我们可以通过在函数中传入event参数，获取当前的点击事件，通过event.target属性获取当前点击节点，再通过dataset属性获取节点的属性信息。
 
 三级联动的路由跳转与传参
 
 如果使用声明式导航router-link，可以实现路由的跳转与传递参数
 但是会出现卡顿现象。
 原因： router-link为一个组件，当服务器的数据返回之后，循环出很多的router-link组件（需要创建组件实例）1000+ 数量较多
+
 创建组件实例的时候，一瞬间创建上千个十分耗内存，因此出现卡顿现象。
 编程式导航也不是最优化的实现方式
 采用编程式导航+事件委派，避开循环语句，放置事件。
@@ -326,3 +387,11 @@ methods: {
 #### 1、开启命名空间后使用mapState
 
 ![image-20230706110456250](../../../../AppData/Roaming/Typora/typora-user-images/image-20230706110456250.png)
+
+
+
+### vue-router:
+
+#### 1、to.path`和`to.fullPath的区别
+
+![image-20230711162501483](../../../../AppData/Roaming/Typora/typora-user-images/image-20230711162501483.png)
